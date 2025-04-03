@@ -42,14 +42,30 @@
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
 
+UART_HandleTypeDef huart1;
+
 /* USER CODE BEGIN PV */
 
+/**
+ * @brief Giá trị 12-bit đọc được từ cảm biến, thông qua ADC. Vậy giá trị trong khoảng [0,4095]
+ * @note  12-bit value obtained from the analog sensor module. So the value in range [0,4095]
+ * @see   HAL_ADC_Start(), HAL_ADC_PollForConversion(), HAL_ADC_GetValue()
+ */
+uint16_t sensor_value;
+
+/**
+ * @brief Bộ đệm dữ liệu để soạn thông diệp và gửi về máy tinh, thông qua UART
+ * @note  The buffer, used to draft the message and then, send it to PC by UART
+ * @see   huart1
+ */
+char uart_buffer[50];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_ADC1_Init(void);
+static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -100,6 +116,20 @@ int main(void)
   {
     /* USER CODE END WHILE */
 
+	  /// Yêu cầu ADC thực hiện chuyển đổi dữ liệu Anglog --> Digital ở kênh đã chỉ định
+	  HAL_ADC_Start(&hadc1);
+
+	  /// Quá trình chuyển đổi đòi hòi thời gian (tốc độ lấy mẫu).
+	  /// Bởi vậy, cần đợi một chút cho tới khi thực hiện xong, nhưng không đợi quá Timeout 20ms.
+	  /// ==> hàm Blocking, thực hiện vòng lặp đợi dữ liệu kiểu Polling.
+	  HAL_ADC_PollForConversion(&hadc1, 20);
+
+	  /// Lúc này dữ liệu đã sẵn sàng trong bộ ADC. Lấy về và lưu vào biến chỉ định.
+	  sensor_value = HAL_ADC_GetValue(&hadc1);
+
+	  /// Truyền về máy tính để tiện giám sát số liệu
+	  sprintf(uart_buffer, "%d\r\n", sensor_value);
+	  HAL_UART_Transmit(&huart1, (uint8_t *)uart_buffer, strlen(uart_buffer), HAL_MAX_DELAY);
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */

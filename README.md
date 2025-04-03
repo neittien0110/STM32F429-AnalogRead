@@ -17,6 +17,8 @@ Phù hợp để áp dụng cho các module cảm biến có chân trả về __
 - Module âm thanh.\
   ![alt text](./assets/amthanh.png)
 
+> Để đọc số liệu từ các dạng cảm biến này, chỉ cần cắm lại dây sang module cảm biến mới, mà không cần phải lập trình lại.
+
 ## Kết nối STM32F429 với module cảm biến
 
 |STM32F429|Module cảm biến|
@@ -35,3 +37,20 @@ Phù hợp để áp dụng cho các module cảm biến có chân trả về __
 3. Vẫn trong file __.ioc__, bổ sung thêm __UART1__ để truyền số liệu thu được về máy tính, phục vụ để debug.\
   *Lưu ý rằng: __UART1__ trên STM32 sẽ giao tiếp với máy tính qua chính cổng USB mini dùng để nạp chương trình, nên sẽ không cần cắm dây bổ sung.*\
   ![alt text](./assets/caidatuart1.png)
+
+4. Trong file __main.c__, khởi tạo biến để chứa giá trị analog đọc được.
+
+    ```C
+      uint16_t sensor_value;
+    ```
+
+5. Trong file __main.c__, thực hiện đọc số liệu với 3 bước:
+    1. Yêu cầu __ADC__ chuyển đổi
+    2. Chờ __ADC__ chuyển đổi xong
+    3. Lấy giá trị từ __ADC__.
+  
+    ```C
+    HAL_ADC_Start(&hadc1);
+    HAL_ADC_PollForConversion(&hadc1, 20);
+    sensor_value = HAL_ADC_GetValue(&hadc1);
+    ```
