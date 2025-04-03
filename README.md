@@ -28,7 +28,10 @@ Phù hợp để áp dụng cho các module cảm biến có chân trả về __
 
 ## Thực hiện
 
-1. Tạo dự án mới với __MCU__ là __STM32F429zIT6__
+1. Tạo dự án mới với __MCU__ là __STM32F429zIT6__\
   ![alt text](./assets/newproject_with_mcu.png)
-2. Chọn bộ ADC sẽ sử dụng (ADC1, ADC2, hay ADC3). Ứng với bộ ADC đó, chọn kênh đầu vào là IN nào trong số 16 nguồn vào.
+2. Mở file __.ioc__, Chọn bộ __ADC__ sẽ sử dụng (ADC1, ADC2, hay ADC3). Ứng với bộ __ADC__ đó, chọn kênh đầu vào là __IN nào__ trong số 16 nguồn vào.\
   ![alt text](./assets/selectadc.png)
+3. Vẫn trong file __.ioc__, bổ sung thêm __UART1__ để truyền số liệu thu được về máy tính, phục vụ để debug.\
+  *Lưu ý rằng: __UART1__ trên STM32 sẽ giao tiếp với máy tính qua chính cổng USB mini dùng để nạp chương trình, nên sẽ không cần cắm dây bổ sung.*\
+  ![alt text](./assets/caidatuart1.png)
