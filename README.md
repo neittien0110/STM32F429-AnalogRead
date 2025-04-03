@@ -29,4 +29,6 @@ Phù hợp để áp dụng cho các module cảm biến có chân trả về __
 ## Thực hiện
 
 1. Tạo dự án mới với __MCU__ là __STM32F429zIT6__
-    ![alt text](./assets/newproject_with_mcu.png)
+  ![alt text](./assets/newproject_with_mcu.png)
+2. Chọn bộ ADC sẽ sử dụng (ADC1, ADC2, hay ADC3). Ứng với bộ ADC đó, chọn kênh đầu vào là IN nào trong số 16 nguồn vào.
+  ![alt text](./assets/selectadc.png)
