@@ -8,6 +8,8 @@
 
 Phù hợp để áp dụng cho các module cảm biến có chân trả về __A0__ (chữ A có ý nghĩa là Analog). Ví dụ:
 
+- Biến trở.\
+  ![biến trở](./assets/bientro.png)
 - Module MQ-03 - cảm biến nồng độ cồn.\
   ![mq3](./assets/mq3.png)
 - Module MQ-08 - cảm biến khi gas dễ cháy.\
@@ -56,6 +58,6 @@ Phù hợp để áp dụng cho các module cảm biến có chân trả về __
     ```
 
 ## Kết quả
-
+   [Video demo![alt text](./assets/video_demo.png)](https://youtube.com/shorts/wBLDlglATeg)
    ![Ảnh 1](./assets/20250403_183009.jpg)
    ![Ảnh 2](./assets/20250403_183027.jpg)
