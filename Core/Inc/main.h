@@ -31,7 +31,8 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "string.h"  // Thư viện string.h để sử dụng hàm strlen()
+#include "stdio.h"   // Thư viện stdio.h để sử dụng hàm sprintf()
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -59,6 +60,15 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 
 /* USER CODE BEGIN Private defines */
+//#define MY_ADC_POLLING     //Phương pháp Polling. Để sử dụng, bỏ comment dòng lệnh này và recomment các define tương tự
+#define MY_ADC_INTERRUPT    // Phương pháp Interrupt. Để sử dụng, bỏ comment dòng lệnh này và recomment các define tương tự
+
+#if defined(MY_ADC_POLLING)
+	/// Nội dung UART giúp phân biệt chương trình đang sử dụng cách thăm dò nào
+	#define UART_PROMT "Polling"
+#elif defined(MY_ADC_INTERRUPT)
+	#define UART_PROMT "Interrupt-NoDMA"
+#endif
 
 /* USER CODE END Private defines */
 
