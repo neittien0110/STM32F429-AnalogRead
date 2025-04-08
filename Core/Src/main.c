@@ -114,8 +114,6 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    /* USER CODE END WHILE */
-
 	  /// Yêu cầu ADC thực hiện chuyển đổi dữ liệu Anglog --> Digital ở kênh đã chỉ định
 	  HAL_ADC_Start(&hadc1);
 
@@ -130,6 +128,8 @@ int main(void)
 	  /// Truyền về máy tính để tiện giám sát số liệu
 	  sprintf(uart_buffer, "%d\r\n", sensor_value);
 	  HAL_UART_Transmit(&huart1, (uint8_t *)uart_buffer, strlen(uart_buffer), HAL_MAX_DELAY);
+    /* USER CODE END WHILE */
+
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
