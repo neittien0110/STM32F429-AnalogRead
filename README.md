@@ -54,3 +54,8 @@ Phù hợp để áp dụng cho các module cảm biến có chân trả về __
     HAL_ADC_PollForConversion(&hadc1, 20);
     sensor_value = HAL_ADC_GetValue(&hadc1);
     ```
+
+## Kết quả
+
+   ![Ảnh 1](./assets/20250403_183009.jpg)
+   ![Ảnh 2](./assets/20250403_183027.jpg)
