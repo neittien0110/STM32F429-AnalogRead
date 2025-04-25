@@ -16,6 +16,8 @@ Phù hợp để áp dụng cho các module cảm biến có chân trả về __
   ![cuongdosang](./assets/cuongdosang.png)
 - Module âm thanh.\
   ![alt text](./assets/amthanh.png)
+- Biến trở
+  ![image](https://github.com/user-attachments/assets/13cf20cc-ebb3-41a0-ae95-0c4f8d199d9f)
 
 > Để đọc số liệu từ các dạng cảm biến này, chỉ cần cắm lại dây sang module cảm biến mới, mà không cần phải lập trình lại.
 
@@ -59,3 +61,4 @@ Phù hợp để áp dụng cho các module cảm biến có chân trả về __
 
    ![Ảnh 1](./assets/20250403_183009.jpg)
    ![Ảnh 2](./assets/20250403_183027.jpg)
+   Xem video [![Video biến trở](https://github.com/user-attachments/assets/fc247189-9e6f-4907-85a7-31dabba57f1d)](https://youtube.com/shorts/AHpfNx5uESY?feature=share)
