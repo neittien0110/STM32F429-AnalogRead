@@ -61,4 +61,5 @@ Phù hợp để áp dụng cho các module cảm biến có chân trả về __
 
    ![Ảnh 1](./assets/20250403_183009.jpg)
    ![Ảnh 2](./assets/20250403_183027.jpg)
+   ![Ảnh 3 biến trở](https://github.com/user-attachments/assets/4e08532e-f322-4908-821e-e8539aff1d78)
    Xem video [![Video biến trở](https://github.com/user-attachments/assets/fc247189-9e6f-4907-85a7-31dabba57f1d)](https://youtube.com/shorts/AHpfNx5uESY?feature=share)
