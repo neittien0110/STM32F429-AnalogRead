@@ -9,9 +9,9 @@
 Phù hợp để áp dụng cho các module cảm biến có chân trả về __A0__ (chữ A có ý nghĩa là Analog). Ví dụ:
 
 - Module MQ-03 - cảm biến nồng độ cồn.\
-  ![mq3](./assets/mq3.png)
+  ![mq3](./assets/mq3.png) ![mq3 Nhat Tùng](https://github.com/user-attachments/assets/98fe88d2-aee9-4a0e-8f5d-7082ebc360f3)
 - Module MQ-08 - cảm biến khi gas dễ cháy.\
-  ![mq9](./assets/mq9.png) \
+  ![mq9](./assets/mq9.png)  ![image](https://github.com/user-attachments/assets/2367c400-e131-48d5-8e5f-0908d917b80f)
 - Module cường độ sáng.\
   ![cuongdosang](./assets/cuongdosang.png)
 - Module âm thanh.\
