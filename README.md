@@ -11,13 +11,15 @@ Phù hợp để áp dụng cho các module cảm biến có chân trả về __
 - Biến trở.\
   ![biến trở](./assets/bientro.png)
 - Module MQ-03 - cảm biến nồng độ cồn.\
-  ![mq3](./assets/mq3.png)
+  ![mq3](./assets/mq3.png) ![mq3 Nhat Tùng](https://github.com/user-attachments/assets/98fe88d2-aee9-4a0e-8f5d-7082ebc360f3)
 - Module MQ-08 - cảm biến khi gas dễ cháy.\
-  ![mq9](./assets/mq9.png) \
+  ![mq9](./assets/mq9.png)  ![image](https://github.com/user-attachments/assets/2367c400-e131-48d5-8e5f-0908d917b80f)
 - Module cường độ sáng.\
   ![cuongdosang](./assets/cuongdosang.png)
 - Module âm thanh.\
   ![alt text](./assets/amthanh.png)
+- Biến trở
+  ![image](https://github.com/user-attachments/assets/13cf20cc-ebb3-41a0-ae95-0c4f8d199d9f)
 
 > Để đọc số liệu từ các dạng cảm biến này, chỉ cần cắm lại dây sang module cảm biến mới, mà không cần phải lập trình lại.
 
@@ -61,3 +63,5 @@ Phù hợp để áp dụng cho các module cảm biến có chân trả về __
    [Video demo![alt text](./assets/video_demo.png)](https://youtube.com/shorts/wBLDlglATeg)
    ![Ảnh 1](./assets/20250403_183009.jpg)
    ![Ảnh 2](./assets/20250403_183027.jpg)
+   ![Ảnh 3 biến trở](https://github.com/user-attachments/assets/4e08532e-f322-4908-821e-e8539aff1d78)
+   Xem video [![Video biến trở](https://github.com/user-attachments/assets/fc247189-9e6f-4907-85a7-31dabba57f1d)](https://youtube.com/shorts/AHpfNx5uESY?feature=share)
