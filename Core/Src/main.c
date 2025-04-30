@@ -112,9 +112,19 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
+#ifdef MY_ADC_INTERRUPT
+	  /// Yêu cầu ADC thực hiện chuyển đổi dữ liệu Anglog --> Digital ở kênh đã chỉ định, và dùng Interrupt.
+  	  /// Lưu ý: Với thăm dò polling thì dùng hàm HAL_ADC_Start(), với thăm dò bằng ngắt thì dùng HAL_ADC_Start_IT()
+	  HAL_ADC_Start_IT(&hadc1);
+#endif
+
   while (1)
   {
+
+#ifdef MY_ADC_POLLING    
 	  /// Yêu cầu ADC thực hiện chuyển đổi dữ liệu Anglog --> Digital ở kênh đã chỉ định
+	  /// Lưu ý: Với thăm dò polling thì dùng hàm HAL_ADC_Start(), với thăm dò bằng ngắt thì dùng HAL_ADC_Start_IT()
 	  HAL_ADC_Start(&hadc1);
 
 	  /// Quá trình chuyển đổi đòi hòi thời gian (tốc độ lấy mẫu).
@@ -124,10 +134,17 @@ int main(void)
 
 	  /// Lúc này dữ liệu đã sẵn sàng trong bộ ADC. Lấy về và lưu vào biến chỉ định.
 	  sensor_value = HAL_ADC_GetValue(&hadc1);
+#endif /* MY_ADC_POLLING */
+#ifdef MY_ADC_INTERRUPT
+	  /// Note: Không phải làm gì cả. Ngắt ADC sẽ tự kích hoạt chương trình con ngắt ADC_IRQHandler() để đọc dữ liệu và ghi vào biến sensor_value
+#endif
 
 	  /// Truyền về máy tính để tiện giám sát số liệu
 	  sprintf(uart_buffer, "%d\r\n", sensor_value);
 	  HAL_UART_Transmit(&huart1, (uint8_t *)uart_buffer, strlen(uart_buffer), HAL_MAX_DELAY);
+
+	  /// Đợi một chút
+	  HAL_Delay(200);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -268,14 +285,14 @@ static void MX_USART1_UART_Init(void)
   */
 static void MX_GPIO_Init(void)
 {
-/* USER CODE BEGIN MX_GPIO_Init_1 */
-/* USER CODE END MX_GPIO_Init_1 */
+  /* USER CODE BEGIN MX_GPIO_Init_1 */
+  /* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOA_CLK_ENABLE();
 
-/* USER CODE BEGIN MX_GPIO_Init_2 */
-/* USER CODE END MX_GPIO_Init_2 */
+  /* USER CODE BEGIN MX_GPIO_Init_2 */
+  /* USER CODE END MX_GPIO_Init_2 */
 }
 
 /* USER CODE BEGIN 4 */
