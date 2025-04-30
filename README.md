@@ -91,6 +91,20 @@ Chương trình áp dụng cả 3 phương pháp thăm dò và đọc thông tin
     sensor_value = HAL_ADC_GetValue(&hadc1);
    ```
 
+## Thực hiện với phương pháp Polling + DMA
+
+Tiếp tục phần ngắt ở trên
+
+1. Mở file __.ioc__, vẫn trong __Pintout & Configuration__, trong __Collapse menu trái__, chọn bộ __ADC__ đã tích chọn trước đó.\
+   Tiếp tục, trong mục __Configuration__, trong __tab DMA Setting__, bấm __Add__ và chọn __ADC__ đã chọn.
+   ![DMASettings_AddRequest](./assets/DMASettings_AddRequest.png)\
+   Vậy đã tạo xong một DMA Request với thông số mặc định.
+2. Ở phần bên dưới của tab __DMA Settings__, hãy thiết lập các thông số như trong ảnh dưới\
+    ![DMASettings_RequestSettings](./assets/DMASettings_RequestSettings.png)\
+    Vậy đã cấu hình xong một DMA Request.
+3. Chuyển sang tab __Parameter Settings__, hãy thiết lập như trong ảnh\
+   ![ADCSettings_SelectMethods](./assets/ADCSettings_SelectMethods.png)
+
 ## Kết quả
 
    [Video demo![alt text](./assets/video_demo.png)](https://youtube.com/shorts/wBLDlglATeg)
