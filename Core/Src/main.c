@@ -140,7 +140,7 @@ int main(void)
 #endif
 
 	  /// Truyền về máy tính để tiện giám sát số liệu
-	  sprintf(uart_buffer, "%d\r\n", sensor_value);
+	  sprintf(uart_buffer, "%s: %d\r\n", UART_PROMT, sensor_value);
 	  HAL_UART_Transmit(&huart1, (uint8_t *)uart_buffer, strlen(uart_buffer), HAL_MAX_DELAY);
 
 	  /// Đợi một chút
@@ -296,7 +296,9 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void HAL_ADC_LevelOutOfWindowCallback(ADC_HandleTypeDef *hadc){
 
+}
 /* USER CODE END 4 */
 
 /**
