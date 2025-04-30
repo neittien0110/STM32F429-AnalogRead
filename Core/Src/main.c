@@ -49,7 +49,8 @@ UART_HandleTypeDef huart1;
 
 /**
  * @brief Giá trị 12-bit đọc được từ cảm biến, thông qua ADC. Vậy giá trị trong khoảng [0,4095]
- * @note  12-bit value obtained from the analog sensor module. So the value in range [0,4095]
+ * @note  - giá trị số 12-bit, trong phạm vi [0,4095]
+ *        - Vẫn áp dụng được với DMA, vì DMA sẽ tự động align về 32-bit.
  * @see   HAL_ADC_Start(), HAL_ADC_PollForConversion(), HAL_ADC_GetValue()
  */
 uint16_t sensor_value;
@@ -110,7 +111,14 @@ int main(void)
   MX_ADC1_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-
+#ifdef MY_ADC_DMA
+  /// Kích hoạt ADC DMA request sau lần truyền cuối cùng (Chế độ Single-ADC) và kích hoạt thiết bị ngoại vi ADC,
+  /// trong đó sensor_value là địa chỉ đích, sẽ được DMA tự động copy dữ liệu từ thiết bị ngoại vi vào đó.
+  /// CHÚ Ý:
+  ///   - Tham số 2: là ĐỊA CHỈ của buffer chứa kết quả, do ADC chuyển đổi và được DMAC copy vào.
+  ///   - Tham số 3: là số phần tử của buffer, không phải là số byte. Ví dụ uint16_t buffer[20] thì tham số này là 20.
+  HAL_ADC_Start_DMA(&hadc1, &sensor_value, 1);
+#endif
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -140,11 +148,11 @@ int main(void)
 #endif /* MY_ADC_POLLING */
 #ifdef MY_ADC_INTERRUPT
 	  /// Note: Không phải làm gì cả. Ngắt ADC sẽ tự kích hoạt chương trình con ngắt ADC_IRQHandler() để đọc dữ liệu và ghi vào biến sensor_value
-#endif
 
 	  /// Truyền về máy tính để tiện giám sát số liệu
 	  sprintf(uart_buffer, "%s: %d\r\n", UART_PROMT, sensor_value);
 	  HAL_UART_Transmit(&huart1, (uint8_t *)uart_buffer, strlen(uart_buffer), HAL_MAX_DELAY);
+#endif
 
 	  /// Đợi một chút
 	  HAL_Delay(200);
@@ -315,11 +323,23 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+#if defined(MY_ADC_DMA)
+/**
+ * @brief Hàm sự kiện được gọi sau khi ADC chuyển đổi thành công dữ liệu
+ *        và DMA hoàn tất copy dữ liệu vào đich
+ * @note  ADC thực hiện với đồng hồ 48MHz, nhanh hơn nhiều so với core 12Mhz,
+ * @remark Cách để tạo khung của hàm này là:
+ * 		   - Ở cửa sổ Project Explorer, mở thư mục Drivers\STM32F4xx_HAL_Driver\Src
+ *         - Mở file stm32f4xx_hal_adc.c
+ *         - Tìm file hoặc trong cửa sổ Outline và copy khai báo hàm vào đây
+ *         - Xong. Đây là dạng hàm abtract, nên chỉ cần viết đè là xong.
+ */
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc){
 	/// Truyền về máy tính để tiện giám sát số liệu
-	sprintf(uart_buffer, "%s: %s\r\n", UART_PROMT, "HAL_ADC_ConvCpltCallback");
+	sprintf(uart_buffer, "%s:: %d\r\n", UART_PROMT, sensor_value);
 	HAL_UART_Transmit(&huart1, (uint8_t *)uart_buffer, strlen(uart_buffer), HAL_MAX_DELAY);
 }
+#endif
 /* USER CODE END 4 */
 
 /**

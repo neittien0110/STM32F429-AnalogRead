@@ -93,17 +93,53 @@ Chương trình áp dụng cả 3 phương pháp thăm dò và đọc thông tin
 
 ## Thực hiện với phương pháp Polling + DMA
 
-Tiếp tục phần ngắt ở trên
+Giả định rằng biến __sensor_value__ vẫn y hệt như ở phần Polling và Interrupt để tiện so sánh.
 
 1. Mở file __.ioc__, vẫn trong __Pintout & Configuration__, trong __Collapse menu trái__, chọn bộ __ADC__ đã tích chọn trước đó.\
    Tiếp tục, trong mục __Configuration__, trong __tab DMA Setting__, bấm __Add__ và chọn __ADC__ đã chọn.
    ![DMASettings_AddRequest](./assets/DMASettings_AddRequest.png)\
    Vậy đã tạo xong một DMA Request với thông số mặc định.
-2. Ở phần bên dưới của tab __DMA Settings__, hãy thiết lập các thông số như trong ảnh dưới\
+2. Ở phần bên dưới của tab __DMA Settings__, hãy thiết lập các thông số như trong ảnh dưới, <span style="color:red"> __NHƯNG DataWidth = HalfWord__ ở cả Peripheral và Memory </span>, với lý do là vùng buffer, là biến  __sensor_value__, thuộc kiểu uint16_t 16-bit. \
     ![DMASettings_RequestSettings](./assets/DMASettings_RequestSettings.png)\
+    > Lưu ý: 
     Vậy đã cấu hình xong một DMA Request.
 3. Chuyển sang tab __Parameter Settings__, hãy thiết lập như trong ảnh\
    ![ADCSettings_SelectMethods](./assets/ADCSettings_SelectMethods.png)
+
+4. Trong file __main.c__, bổ sung 1 lệnh để kích hoạt DMA. 
+   > Trong ví dụ dưới, kiểu dữ liệu của biến __sensor_value__ sẽ liên quan tới cấu hình __DMA Request__ ở bước trên
+
+   ```C
+    /**
+      * Kích hoạt ADC DMA request sau lần truyền cuối cùng (Chế độ Single-ADC) và kích hoạt thiết bị ngoại vi ADC,
+      * trong đó sensor_value là địa chỉ đích, sẽ được DMA tự động copy dữ liệu từ thiết bị ngoại vi vào đó.
+      * CHÚ Ý:
+      * - Tham số 2: là ĐỊA CHỈ của buffer chứa kết quả, do ADC chuyển đổi và được DMAC copy vào.
+      * - Tham số 3: là số phần tử của buffer, không phải là số byte. Ví dụ uint16_t buffer[20] thì tham số này là 20.
+    */
+    HAL_ADC_Start_DMA(&hadc1, &sensor_value, 1);
+   ```
+
+5. Vẫn trong file __main.c__, bổ sung hàm để hiển thị thông tin ra UART
+
+  ```C
+    /**
+    * @brief Hàm sự kiện được gọi sau khi ADC chuyển đổi thành công dữ liệu
+    *        và DMA hoàn tất copy dữ liệu vào đich
+    * @note  ADC thực hiện với đồng hồ 48MHz, nhanh hơn nhiều so với core 12Mhz,
+    */
+    void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc){
+      /// Truyền về máy tính để tiện giám sát số liệu
+      sprintf(uart_buffer, "%s:: %d\r\n", UART_PROMT, sensor_value);
+      HAL_UART_Transmit(&huart1, (uint8_t *)uart_buffer, strlen(uart_buffer), HAL_MAX_DELAY);
+    }   
+   ```
+
+- Gợi ý cách để khai báo hàm này cho chính xác là:
+  - Ở cửa sổ Project Explorer, mở thư mục Drivers\STM32F4xx_HAL_Driver\Src
+  - Mở file stm32f4xx_hal_adc.c
+  - Tìm file hoặc trong cửa sổ Outline và copy khai báo hàm vào đây
+  - Xong. Đây là dạng hàm abtract, nên chỉ cần viết đè là xong.
 
 ## Kết quả
 
