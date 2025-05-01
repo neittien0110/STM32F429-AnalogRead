@@ -60,14 +60,18 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 
 /* USER CODE BEGIN Private defines */
-//#define MY_ADC_POLLING     //Phương pháp Polling. Để sử dụng, bỏ comment dòng lệnh này và recomment các define tương tự
-#define MY_ADC_INTERRUPT    // Phương pháp Interrupt. Để sử dụng, bỏ comment dòng lệnh này và recomment các define tương tự
+//#define MY_ADC_POLLING     //Phương pháp Polling. Để sử dụng, bỏ comment dòng lệnh này và recomment 2 define còn lại.
+//#define MY_ADC_INTERRUPT     // Phương pháp Interrupt. Để sử dụng, bỏ comment dòng lệnh này và recomment 2 define còn lại.
+#define MY_ADC_DMA           // Phương pháp DMA. Để sử dụng, bỏ comment dòng lệnh này và recomment 2 define còn lại.
+                             // Tham khảo thêm: https://www.st.com/resource/en/application_note/an4031-using-the-stm32f2-stm32f4-and-stm32f7-series-dma-controller-stmicroelectronics.pdf
 
 #if defined(MY_ADC_POLLING)
 	/// Nội dung UART giúp phân biệt chương trình đang sử dụng cách thăm dò nào
 	#define UART_PROMT "Polling"
 #elif defined(MY_ADC_INTERRUPT)
 	#define UART_PROMT "Interrupt-NoDMA"
+#elif defined(MY_ADC_DMA)
+	#define UART_PROMT "Interrupt-DMA"
 #endif
 
 /* USER CODE END Private defines */

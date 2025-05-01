@@ -8,9 +8,9 @@ Chương trình sau hỗ trợ đọc dữ liệu đã chuyển đổi Analog To
 
 1. [__Polling/Hỏi vòng__](#thực-hiện-với-phương-pháp-polling): đặc trưng với 2 vòng lặp: vòng lặp xác định trạng thái sẵn sàng của thiết bị, và vòng lặp đọc mảng dữ liệu.
 2. [__Interrupt/Ngắt__](#thực-hiện-với-phương-pháp-interrupt): đặc trưng với 1 vòng lặp đọc mảng dữ liệu. Trong đó trạng thái sẵn sàng do thiết bị gửi tín hiệu ngắt báo hiệu.
-3. __DMA/Truy cập bộ nhớ trực tiếp__: đặc trưng với 0 vòng lặp. Trong đó trạng thái sẵn sàng do thiết bị gửi tín hiệu ngắt báo hiệu và bộ điều khiển DMAC chịu trách nhiệm copy dữ liệu từ thiết bị/module IO trực tiếp vào bộ nhớ chính.
+3. [__DMA/Truy cập bộ nhớ trực tiếp__](#thực-hiện-với-phương-pháp-interrupt--dma): đặc trưng với 0 vòng lặp. Trong đó trạng thái sẵn sàng do thiết bị gửi tín hiệu ngắt báo hiệu và bộ điều khiển DMAC chịu trách nhiệm copy dữ liệu từ thiết bị/module IO trực tiếp vào bộ nhớ chính.
 
->Chú ý: trong chương trình này, dữ liệu từ cảm biến chỉ có 1 word dữ liệu đơn nên sẽ không nhìn thấy vòng lặp đọc mảng dữ liệu, mà đơn giản chỉ là 1 lệnh HAL_ADC_GetValue()
+>Chú ý: trong chương trình này, để so sánh 3 phương pháp, dữ liệu từ cảm biến được lưu chung vào 1 biến __uint16_t sensor_value__ duy nhất.
 
 ## Ứng dụng
 
@@ -42,11 +42,12 @@ Phù hợp để áp dụng cho các module cảm biến có chân trả về __
 
 ## Hướng dẫn sử dụng nhanh
 
-Chương trình áp dụng cả 3 phương pháp thăm dò và đọc thông tin bằng [polling](#thực-hiện-với-phương-pháp-polling), [interrupt](#thực-hiện-với-phương-pháp-interrupt), dma. Để chuyển đổi giữa 3 phương pháp này, hãy __bỏ dòng chú thích__ cho dòng tương ứng trong file __main.h__
+Chương trình áp dụng cả 3 phương pháp thăm dò và đọc thông tin bằng [polling](#thực-hiện-với-phương-pháp-polling), [interrupt](#thực-hiện-với-phương-pháp-interrupt), [dma](#thực-hiện-với-phương-pháp-interrupt--dma). Để chuyển đổi giữa 3 phương pháp này, hãy __bỏ dòng chú thích__ cho dòng tương ứng trong file __main.h__
 
 ```C
-  #define MY_ADC_POLLING     //Phương pháp Polling. Để sử dụng, bỏ comment dòng lệnh này và recomment các define tương tự
-  #define MY_ADC_INTERRUPT   // Phương pháp Interrupt. Để sử dụng, bỏ comment dòng lệnh này và recomment các define tương tự
+  #define MY_ADC_POLLING     //Phương pháp Polling. Để sử dụng, bỏ comment dòng lệnh này và recomment  2 define còn lại
+  //#define MY_ADC_INTERRUPT   // Phương pháp Interrupt. Để sử dụng, bỏ comment dòng lệnh này và recomment  2 define còn lại
+  //#define MY_ADC_DMA           // Phương pháp DMA. Để sử dụng, bỏ comment dòng lệnh này và recomment 2 define còn lại
 ```
 
 ## Thực hiện với phương pháp Polling
@@ -90,6 +91,56 @@ Chương trình áp dụng cả 3 phương pháp thăm dò và đọc thông tin
    ```C
     sensor_value = HAL_ADC_GetValue(&hadc1);
    ```
+
+## Thực hiện với phương pháp Interrupt + DMA
+
+Giả định rằng biến __sensor_value__ vẫn y hệt như ở phần Polling và Interrupt để tiện so sánh.
+
+1. Mở file __.ioc__, vẫn trong __Pintout & Configuration__, trong __Collapse menu trái__, chọn bộ __ADC__ đã tích chọn trước đó.\
+   Tiếp tục, trong mục __Configuration__, trong __tab DMA Setting__, bấm __Add__ và chọn __ADC__ đã chọn.
+   ![DMASettings_AddRequest](./assets/DMASettings_AddRequest.png)\
+   Vậy đã tạo xong một DMA Request với thông số mặc định.
+2. Ở phần bên dưới của tab __DMA Settings__, hãy thiết lập các thông số như trong ảnh dưới, <span style="color:red"> __NHƯNG DataWidth = HalfWord__ ở cả Peripheral và Memory </span>, với lý do là vùng buffer, là biến  __sensor_value__, thuộc kiểu uint16_t 16-bit. \
+    ![DMASettings_RequestSettings](./assets/DMASettings_RequestSettings.png)\
+    > Lưu ý: 
+    Vậy đã cấu hình xong một DMA Request.
+3. Chuyển sang tab __Parameter Settings__, hãy thiết lập như trong ảnh\
+   ![ADCSettings_SelectMethods](./assets/ADCSettings_SelectMethods.png)
+
+4. Trong file __main.c__, bổ sung 1 lệnh để kích hoạt DMA. 
+   > Trong ví dụ dưới, kiểu dữ liệu của biến __sensor_value__ sẽ liên quan tới cấu hình __DMA Request__ ở bước trên
+
+   ```C
+    /**
+      * Kích hoạt ADC DMA request sau lần truyền cuối cùng (Chế độ Single-ADC) và kích hoạt thiết bị ngoại vi ADC,
+      * trong đó sensor_value là địa chỉ đích, sẽ được DMA tự động copy dữ liệu từ thiết bị ngoại vi vào đó.
+      * CHÚ Ý:
+      * - Tham số 2: là ĐỊA CHỈ của buffer chứa kết quả, do ADC chuyển đổi và được DMAC copy vào.
+      * - Tham số 3: là số phần tử của buffer, không phải là số byte. Ví dụ uint16_t buffer[20] thì tham số này là 20.
+    */
+    HAL_ADC_Start_DMA(&hadc1, &sensor_value, 1);
+   ```
+
+5. Vẫn trong file __main.c__, bổ sung hàm để hiển thị thông tin ra UART
+
+  ```C
+    /**
+    * @brief Hàm sự kiện được gọi sau khi ADC chuyển đổi thành công dữ liệu
+    *        và DMA hoàn tất copy dữ liệu vào đich
+    * @note  ADC thực hiện với đồng hồ 48MHz, nhanh hơn nhiều so với core 12Mhz,
+    */
+    void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc){
+      /// Truyền về máy tính để tiện giám sát số liệu
+      sprintf(uart_buffer, "%s:: %d\r\n", UART_PROMT, sensor_value);
+      HAL_UART_Transmit(&huart1, (uint8_t *)uart_buffer, strlen(uart_buffer), HAL_MAX_DELAY);
+    }   
+   ```
+
+- Gợi ý cách để khai báo hàm này cho chính xác là:
+  - Ở cửa sổ Project Explorer, mở thư mục Drivers\STM32F4xx_HAL_Driver\Src
+  - Mở file stm32f4xx_hal_adc.c
+  - Tìm file hoặc trong cửa sổ Outline và copy khai báo hàm vào đây
+  - Xong. Đây là dạng hàm abtract, nên chỉ cần viết đè là xong.
 
 ## Kết quả
 
