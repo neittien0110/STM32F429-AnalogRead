@@ -100,7 +100,7 @@ Giả định rằng biến __sensor_value__ vẫn y hệt như ở phần Polli
    Tiếp tục, trong mục __Configuration__, trong __tab DMA Setting__, bấm __Add__ và chọn __ADC__ đã chọn.
    ![DMASettings_AddRequest](./assets/DMASettings_AddRequest.png)\
    Vậy đã tạo xong một DMA Request với thông số mặc định.
-2. Ở phần bên dưới của tab __DMA Settings__, hãy thiết lập các thông số như trong ảnh dưới, <span style="color:red"> __NHƯNG DataWidth = HalfWord__ ở cả Peripheral và Memory </span>, với lý do là vùng buffer, là biến  __sensor_value__, thuộc kiểu uint16_t 16-bit. \
+2. Ở phần bên dưới của tab __DMA Settings__, hãy thiết lập các thông số như trong ảnh dưới, <span style="color:red"> __NHƯNG hãy thiết lập DataWidth = HalfWord__ ở cả Peripheral và Memory </span>, với lý do là vùng buffer, là biến  __sensor_value__, thuộc kiểu uint16_t 16-bit. \
     ![DMASettings_RequestSettings](./assets/DMASettings_RequestSettings.png)\
     > Lưu ý: 
     Vậy đã cấu hình xong một DMA Request.
