@@ -146,7 +146,7 @@ int main(void)
 	  /// Lúc này dữ liệu đã sẵn sàng trong bộ ADC. Lấy về và lưu vào biến chỉ định.
 	  sensor_value = HAL_ADC_GetValue(&hadc1);
 #endif /* MY_ADC_POLLING */
-#ifdef MY_ADC_INTERRUPT
+#if defined(MY_ADC_POLLING) || defined(MY_ADC_INTERRUPT)
 	  /// Note: Không phải làm gì cả. Ngắt ADC sẽ tự kích hoạt chương trình con ngắt ADC_IRQHandler() để đọc dữ liệu và ghi vào biến sensor_value
 
 	  /// Truyền về máy tính để tiện giám sát số liệu
@@ -356,8 +356,7 @@ void Error_Handler(void)
   }
   /* USER CODE END Error_Handler_Debug */
 }
-
-#ifdef  USE_FULL_ASSERT
+#ifdef USE_FULL_ASSERT
 /**
   * @brief  Reports the name of the source file and the source line number
   *         where the assert_param error has occurred.
