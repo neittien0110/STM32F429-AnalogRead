@@ -117,7 +117,7 @@ int main(void)
   /// CHÚ Ý:
   ///   - Tham số 2: là ĐỊA CHỈ của buffer chứa kết quả, do ADC chuyển đổi và được DMAC copy vào.
   ///   - Tham số 3: là số phần tử của buffer, không phải là số byte. Ví dụ uint16_t buffer[20] thì tham số này là 20.
-  HAL_ADC_Start_DMA(&hadc1, &sensor_value, 1);
+  HAL_ADC_Start_DMA(&hadc1, (uint32_t *)(&sensor_value), 1);
 #endif
   /* USER CODE END 2 */
 
