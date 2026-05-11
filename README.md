@@ -149,3 +149,7 @@ Giả định rằng biến __sensor_value__ vẫn y hệt như ở phần Polli
    ![Ảnh 2](./assets/20250403_183027.jpg)
    ![Ảnh 3 biến trở](https://github.com/user-attachments/assets/4e08532e-f322-4908-821e-e8539aff1d78)
    Xem video [![Video biến trở](https://github.com/user-attachments/assets/fc247189-9e6f-4907-85a7-31dabba57f1d)](https://youtube.com/shorts/AHpfNx5uESY?feature=share)
+
+## Vấn đề
+
+- **Luôn đọc 1 giá trị cố định từ biến trở vặn**: chân cắm bị lỏng, đặc biệt là biến trở vặn với chân pin ngắn, sẽ không tiếp xúc với dây cắm PH2.54.
