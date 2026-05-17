@@ -323,6 +323,24 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+#if defined(MY_ADC_INTERRUPT)
+/**
+ * @brief Hàm sự kiện được gọi sau khi ADC chuyển đổi thành công dữ liệu
+ *        và dữ liệu mới nằm trên module ADC.
+ *        Nếu ADC tiếp tục chuyển đổi thì dữ liệu trong ADC sẽ bị ghi đè liên tiếp.
+ * @remark Cách để tạo khung của hàm này là:
+ * 		   - Ở cửa sổ Project Explorer, mở thư mục Drivers\STM32F4xx_HAL_Driver\Src
+ *         - Mở file stm32f4xx_hal_adc.c
+ *         - Tìm file hoặc trong cửa sổ Outline và copy khai báo hàm vào đây
+ *         - Xong. Đây là dạng hàm abtract, nên chỉ cần viết đè là xong.
+ */
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc){
+	// Khi ngắt triệu gọi hàm này, dữ liệu đã sẵn sàng và chỉ việc lấy về
+	sensor_value = HAL_ADC_GetValue(&hadc1);
+	// Kích hoạt lại ngắt
+	HAL_ADC_Start_IT(&hadc1);
+}
+#endif
 #if defined(MY_ADC_DMA)
 /**
  * @brief Hàm sự kiện được gọi sau khi ADC chuyển đổi thành công dữ liệu
