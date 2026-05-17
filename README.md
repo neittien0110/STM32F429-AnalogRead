@@ -38,7 +38,7 @@ Phù hợp để áp dụng cho các module cảm biến có chân trả về __
 |3v3|Vcc|
 |GND|GND|
 |PA0 (đóng vai trò tín hiệu ngắt khi vượt ngưỡng)|D0|
-|PA1|A0|
+|PC3|A0|
 
 ## Hướng dẫn sử dụng nhanh
 

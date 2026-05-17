@@ -61,8 +61,8 @@ void Error_Handler(void);
 
 /* USER CODE BEGIN Private defines */
 //#define MY_ADC_POLLING     //Phương pháp Polling. Để sử dụng, bỏ comment dòng lệnh này và recomment 2 define còn lại.
-//#define MY_ADC_INTERRUPT     // Phương pháp Interrupt. Để sử dụng, bỏ comment dòng lệnh này và recomment 2 define còn lại.
-#define MY_ADC_DMA           // Phương pháp DMA. Để sử dụng, bỏ comment dòng lệnh này và recomment 2 define còn lại.
+#define MY_ADC_INTERRUPT     // Phương pháp Interrupt. Để sử dụng, bỏ comment dòng lệnh này và recomment 2 define còn lại.
+//#define MY_ADC_DMA           // Phương pháp DMA. Để sử dụng, bỏ comment dòng lệnh này và recomment 2 define còn lại.
                              // Tham khảo thêm: https://www.st.com/resource/en/application_note/an4031-using-the-stm32f2-stm32f4-and-stm32f7-series-dma-controller-stmicroelectronics.pdf
 
 #if defined(MY_ADC_POLLING)
