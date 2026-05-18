@@ -111,25 +111,23 @@ int main(void)
   MX_ADC1_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-#ifdef MY_ADC_DMA
+#if defined(MY_ADC_DMA)
   /// Kích hoạt ADC DMA request sau lần truyền cuối cùng (Chế độ Single-ADC) và kích hoạt thiết bị ngoại vi ADC,
   /// trong đó sensor_value là địa chỉ đích, sẽ được DMA tự động copy dữ liệu từ thiết bị ngoại vi vào đó.
   /// CHÚ Ý:
   ///   - Tham số 2: là ĐỊA CHỈ của buffer chứa kết quả, do ADC chuyển đổi và được DMAC copy vào.
   ///   - Tham số 3: là số phần tử của buffer, không phải là số byte. Ví dụ uint16_t buffer[20] thì tham số này là 20.
   HAL_ADC_Start_DMA(&hadc1, (uint32_t *)(&sensor_value), 1);
+
+#elif defined(MY_ADC_INTERRUPT)
+  /// Yêu cầu ADC thực hiện chuyển đổi dữ liệu Anglog --> Digital ở kênh đã chỉ định, và dùng Interrupt.
+  /// Lưu ý: Với thăm dò polling thì dùng hàm HAL_ADC_Start(), với thăm dò bằng ngắt thì dùng HAL_ADC_Start_IT()
+  HAL_ADC_Start_IT(&hadc1);
 #endif
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-
-#ifdef MY_ADC_INTERRUPT
-	  /// Yêu cầu ADC thực hiện chuyển đổi dữ liệu Anglog --> Digital ở kênh đã chỉ định, và dùng Interrupt.
-  	  /// Lưu ý: Với thăm dò polling thì dùng hàm HAL_ADC_Start(), với thăm dò bằng ngắt thì dùng HAL_ADC_Start_IT()
-	  HAL_ADC_Start_IT(&hadc1);
-#endif
-
   while (1)
   {
 
@@ -141,24 +139,23 @@ int main(void)
 	  /// Quá trình chuyển đổi đòi hòi thời gian (tốc độ lấy mẫu).
 	  /// Bởi vậy, cần đợi một chút cho tới khi thực hiện xong, nhưng không đợi quá Timeout 20ms.
 	  /// ==> hàm Blocking, thực hiện vòng lặp đợi dữ liệu kiểu Polling.
+	  /// ADC sẽ dừng sau khi đọc xong dữ liệu, nên phải gọi lại HAL_ADC_Start.
 	  HAL_ADC_PollForConversion(&hadc1, 20);
 
 	  /// Lúc này dữ liệu đã sẵn sàng trong bộ ADC. Lấy về và lưu vào biến chỉ định.
 	  sensor_value = HAL_ADC_GetValue(&hadc1);
-#endif /* MY_ADC_POLLING */
-#if defined(MY_ADC_POLLING) || defined(MY_ADC_INTERRUPT)
-	  /// Note: Không phải làm gì cả. Ngắt ADC sẽ tự kích hoạt chương trình con ngắt ADC_IRQHandler() để đọc dữ liệu và ghi vào biến sensor_value
 
 	  /// Truyền về máy tính để tiện giám sát số liệu
 	  sprintf(uart_buffer, "%s: %d\r\n", UART_PROMT, sensor_value);
 	  HAL_UART_Transmit(&huart1, (uint8_t *)uart_buffer, strlen(uart_buffer), HAL_MAX_DELAY);
+	  /// Đợi một chút. Nhưng không được phép sử dụng khi dùng ngắt, vì hàm này blocking, xung đột.
+
 #endif
 
-	  /// Đợi một chút
-	  HAL_Delay(200);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	  HAL_Delay(200);
   }
   /* USER CODE END 3 */
 }
@@ -324,41 +321,41 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+#if defined(MY_ADC_INTERRUPT) || defined(MY_ADC_DMA)
+/**
+ * @brief  Hàm sự kiện được gọi khi dữ liệu đã sẵn sàng trong ADC (với ngắt) hoặc dữ liệu đã sẵn sàng trong biến variable (với DMC)
+ * @detail Trường hợp 1: chỉ Ngắt-Không DMA: Hàm sự kiện được gọi sau khi
+ *         ADC chuyển đổi thành công dữ liệu và dữ liệu mới nằm trên module ADC.
+ *         Nếu ADC tiếp tục chuyển đổi thì dữ liệu trong ADC sẽ bị ghi đè liên tiếp.
+ *         Rất cả các ADC khi có ngắt đều triệu gọi hàm này.
+ *         Vì vậy nếu phần mềm dùng nhiều ADC, ví dụ joystick với 2 ADC theo 2 trục x,y,
+ *         thì phải kiểm tra nguồn ADC nào tạo ra bằng (hadc->Instance == ADC1)
+ *         Trường hợp 2: Ngắt và DMA:  Hàm sự kiện được gọi sau khi ADC chuyển đổi thành công dữ liệu
+ *         và DMA hoàn tất copy dữ liệu vào đich
+ * @note   ADC thực hiện với đồng hồ 48MHz, nhanh hơn nhiều so với core 12Mhz,
+ * @remark Cách để tạo khung của hàm này là:
+ * 		   - Ở cửa sổ Project Explorer, mở thư mục Drivers\STM32F4xx_HAL_Driver\Src
+ *         - Mở file stm32f4xx_hal_adc.c
+ *         - Tìm file hoặc trong cửa sổ Outline và copy khai báo hàm vào đây
+ *         - Xong. Đây là dạng hàm abtract, nên chỉ cần viết đè là xong.
+ */
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc){
+	if(hadc->Instance == ADC1) {
 #if defined(MY_ADC_INTERRUPT)
-/**
- * @brief Hàm sự kiện được gọi sau khi ADC chuyển đổi thành công dữ liệu
- *        và dữ liệu mới nằm trên module ADC.
- *        Nếu ADC tiếp tục chuyển đổi thì dữ liệu trong ADC sẽ bị ghi đè liên tiếp.
- * @remark Cách để tạo khung của hàm này là:
- * 		   - Ở cửa sổ Project Explorer, mở thư mục Drivers\STM32F4xx_HAL_Driver\Src
- *         - Mở file stm32f4xx_hal_adc.c
- *         - Tìm file hoặc trong cửa sổ Outline và copy khai báo hàm vào đây
- *         - Xong. Đây là dạng hàm abtract, nên chỉ cần viết đè là xong.
- */
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc){
-	// Khi ngắt triệu gọi hàm này, dữ liệu đã sẵn sàng và chỉ việc lấy về
-	sensor_value = HAL_ADC_GetValue(&hadc1);
-	// Kích hoạt lại ngắt
-	HAL_ADC_Start_IT(&hadc1);
+		// Khi ngắt triệu gọi hàm này, dữ liệu đã sẵn sàng và chỉ việc lấy về
+		sensor_value = HAL_ADC_GetValue(&hadc1);
+#endif
+		/// Truyền về máy tính để tiện giám sát số liệu
+		sprintf(uart_buffer, "%s:: %d\r\n", UART_PROMT, sensor_value);
+		HAL_UART_Transmit(&huart1, (uint8_t *)uart_buffer, strlen(uart_buffer), HAL_MAX_DELAY);
+#if defined(MY_ADC_INTERRUPT)
+		// Gửi dữ liệu xong thì kích hoạt lại ngắt, nhắm tránh việc gửi UART quá chậm, xung đột với ngắt dữ liệu sẵn sàng từ ADC.
+		HAL_ADC_Start_IT(&hadc1);
+#endif
+	}
 }
 #endif
-#if defined(MY_ADC_DMA)
-/**
- * @brief Hàm sự kiện được gọi sau khi ADC chuyển đổi thành công dữ liệu
- *        và DMA hoàn tất copy dữ liệu vào đich
- * @note  ADC thực hiện với đồng hồ 48MHz, nhanh hơn nhiều so với core 12Mhz,
- * @remark Cách để tạo khung của hàm này là:
- * 		   - Ở cửa sổ Project Explorer, mở thư mục Drivers\STM32F4xx_HAL_Driver\Src
- *         - Mở file stm32f4xx_hal_adc.c
- *         - Tìm file hoặc trong cửa sổ Outline và copy khai báo hàm vào đây
- *         - Xong. Đây là dạng hàm abtract, nên chỉ cần viết đè là xong.
- */
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc){
-	/// Truyền về máy tính để tiện giám sát số liệu
-	sprintf(uart_buffer, "%s:: %d\r\n", UART_PROMT, sensor_value);
-	HAL_UART_Transmit(&huart1, (uint8_t *)uart_buffer, strlen(uart_buffer), HAL_MAX_DELAY);
-}
-#endif
+
 /* USER CODE END 4 */
 
 /**
