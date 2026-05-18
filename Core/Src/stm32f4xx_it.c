@@ -41,13 +41,6 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
-#ifdef MY_ADC_INTERRUPT
-	/**
-	 * @brief Giá trị 12-bit đọc được từ cảm biến, thông qua ADC. Vậy giá trị trong khoảng [0,4095]
-	 * @see   Khai báo trong main.c
-	 */
-	extern uint16_t sensor_value;
-#endif
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -211,21 +204,9 @@ void SysTick_Handler(void)
 void ADC_IRQHandler(void)
 {
   /* USER CODE BEGIN ADC_IRQn 0 */
-#ifdef MY_ADC_INTERRUPT
-	/// Lúc này dữ liệu đã sẵn sàng trong bộ ADC. Lấy về và lưu vào biến chỉ định.
-	sensor_value = HAL_ADC_GetValue(&hadc1);
-#endif
-
-
   /* USER CODE END ADC_IRQn 0 */
   HAL_ADC_IRQHandler(&hadc1);
   /* USER CODE BEGIN ADC_IRQn 1 */
-#ifdef MY_ADC_INTERRUPT
-  /// Lưu ý:
-  ///   - Bắt buộc phải Kích hoạt lại ngắt và bắt đầu thực hiện chuyển đổi ADC.
-  ///   - Phải đặt sau lệnh HAL_ADC_IRQHandler()
-  HAL_ADC_Start_IT(&hadc1);
-#endif
   /* USER CODE END ADC_IRQn 1 */
 }
 
